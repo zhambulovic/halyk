@@ -1,0 +1,319 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--font-sans); background: #f0f4f8; min-height: 100vh; }
+  :root {
+    --green: #0F6E56; --green-light: #E1F5EE; --green-mid: #1D9E75;
+    --gold: #BA7517; --gold-light: #FAEEDA; --gold-mid: #EF9F27;
+    --red: #A32D2D; --red-light: #FCEBEB;
+    --text: #2C2C2A; --muted: #5F5E5A; --border: rgba(0,0,0,0.1);
+  }
+  .app { max-width: 420px; margin: 0 auto; background: #f0f4f8; min-height: 100vh; }
+  .header { background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 100%); padding: 20px 16px 24px; color: white; }
+  .header-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .logo-circle { width: 32px; height: 32px; background: rgba(255,255,255,0.25); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+  .header h1 { font-size: 16px; font-weight: 600; opacity: 0.9; }
+  .header-subtitle { font-size: 12px; opacity: 0.65; margin-top: 2px; }
+  .tabs { display: flex; background: rgba(255,255,255,0.15); border-radius: 10px; padding: 3px; margin-top: 14px; gap: 2px; }
+  .tab { flex: 1; padding: 7px 4px; border-radius: 7px; border: none; background: transparent; color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .tab.active { background: white; color: #0F6E56; font-weight: 600; }
+  .content { padding: 14px; }
+  .section-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+
+  .duty-card { background: white; border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
+  .duty-week { font-size: 11px; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+  .duty-person { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+  .duty-info h3 { font-size: 15px; font-weight: 600; color: var(--text); }
+  .duty-info p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .duty-badge { display: inline-flex; align-items: center; gap: 4px; background: #E1F5EE; color: #0F6E56; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; margin-top: 5px; }
+
+  .staff-card { background: white; border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .staff-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .staff-info h3 { font-size: 14px; font-weight: 600; color: var(--text); }
+  .staff-info p { font-size: 11px; color: var(--muted); }
+  .staff-rank { margin-left: auto; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+  .plan-row { margin-bottom: 8px; }
+  .plan-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .plan-name { font-size: 11px; color: var(--muted); font-weight: 500; }
+  .plan-nums { font-size: 11px; font-weight: 600; }
+  .progress-bar { height: 6px; background: #f0f4f8; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+
+  .input-card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
+  .input-card h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+  .field { margin-bottom: 12px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; display: block; margin-bottom: 5px; }
+  .field select, .field input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: var(--text); background: #fafafa; font-family: var(--font-sans); }
+  .field input:focus, .field select:focus { outline: none; border-color: #1D9E75; background: white; }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-submit { width: 100%; padding: 13px; background: #0F6E56; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-family: var(--font-sans); }
+  .btn-submit:active { opacity: 0.8; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2C2C2A; color: white; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+
+  .duty-sched { background: white; border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .week-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f0f4f8; }
+  .week-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .week-num { font-size: 11px; color: var(--muted); width: 52px; font-weight: 500; }
+  .week-person { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
+  .week-dates { font-size: 11px; color: var(--muted); text-align: right; }
+  .current-week-row { background: #E1F5EE; margin: 0 -14px; padding: 9px 14px; }
+  .current-week-row .week-person { color: #0F6E56; }
+
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .sum-card { background: white; border-radius: 12px; padding: 12px; border: 1px solid var(--border); text-align: center; }
+  .sum-val { font-size: 20px; font-weight: 700; }
+  .sum-lab { font-size: 10px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+  .medal { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+</style>
+
+<div class="app" id="app">
+  <div class="header">
+    <div class="header-logo">
+      <div class="logo-circle">HB</div>
+      <div>
+        <div class="header h1" style="font-size:16px;font-weight:600;">Halyk Bank</div>
+        <div class="header-subtitle">Отделение — Трекер выполнения планов</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('dashboard')">Дашборд</button>
+      <button class="tab" onclick="showTab('input')">Внести</button>
+      <button class="tab" onclick="showTab('duty')">Дежурство</button>
+    </div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STAFF = [
+  { id: 1, name: 'Қайырбек', role: 'МЦО', initials: 'К', color: '#185FA5', bg: '#E6F1FB', plans: { credit: 8, deposit: 0} },
+  { id: 2, name: 'Нуриддин', role: 'МЦО', initials: 'Н', color: '#0F6E56', bg: '#E1F5EE', plans: { credit: 8, deposit: 0 } },
+  { id: 3, name: 'Динара', role: 'Менеджер', initials: 'Д', color: '#BA7517', bg: '#FAEEDA', plans: { credit: 105, deposit: 45 } },
+  { id: 4, name: 'Гүлдана', role: 'Мифровой менеджер', initials: 'Г', color: '#993C1D', bg: '#FAECE7', plans: { credit: 105, deposit: 45 } },
+  { id: 5, name: 'Алма', role: 'Менеджер', initials: 'А', color: '#534AB7', bg: '#EEEDFE', plans: { credit: 105, deposit: 45 } },
+];
+
+const DUTY_SCHEDULE = [
+  { week: 17, dates: '22–26 апр', person: 1 },
+  { week: 18, dates: '29 апр–3 май', person: 2 },
+  { week: 19, dates: '6–10 май', person: 3 },
+  { week: 20, dates: '13–17 май', person: 4 },
+  { week: 21, dates: '20–24 май', person: 5 },
+  { week: 22, dates: '27–31 май', person: 1 },
+];
+const CURRENT_WEEK = 18;
+
+let results = JSON.parse(localStorage.getItem('hb_results') || '{}');
+// Demo data
+if (Object.keys(results).length === 0) {
+  results = { 1: {credit:78,deposit:28}, 2: {credit:5.2,deposit:0}, 3: {credit:7.1,deposit:0}, 4: {credit:3.0,deposit:0}, 5: {credit:41,deposit:14} };
+  localStorage.setItem('hb_results', JSON.stringify(results));
+}
+
+let currentTab = 'dashboard';
+
+function pct(val, plan) { if (!plan) return 0; return Math.min(Math.round(val / plan * 100), 100); }
+function fmt(n) { if (n >= 1) return n.toFixed(1) + ' млн'; return Math.round(n * 1000) + ' тыс'; }
+function fmtPlan(n) { return n + ' млн'; }
+function barColor(p) { if (p >= 100) return '#1D9E75'; if (p >= 60) return '#EF9F27'; return '#E24B4A'; }
+function rankLabel(p) {
+  if (p >= 100) return ['#E1F5EE','#0F6E56','✓ Выполнен'];
+  if (p >= 60) return ['#FAEEDA','#BA7517','В процессе'];
+  return ['#FCEBEB','#A32D2D','Отстаём'];
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['dashboard','input','duty'][i] === tab);
+  });
+  render();
+}
+
+function render() {
+  const c = document.getElementById('content');
+  if (currentTab === 'dashboard') c.innerHTML = renderDashboard();
+  else if (currentTab === 'input') c.innerHTML = renderInput();
+  else c.innerHTML = renderDuty();
+}
+
+function renderDashboard() {
+  const dutyEntry = DUTY_SCHEDULE.find(d => d.week === CURRENT_WEEK);
+  const dutyPerson = STAFF.find(s => s.id === dutyEntry.person);
+
+  let totalCredit = 0, totalPlanCredit = 0;
+  STAFF.forEach(s => {
+    totalCredit += (results[s.id]?.credit || 0);
+    totalPlanCredit += s.plans.credit;
+  });
+  const totalPct = pct(totalCredit, totalPlanCredit);
+
+  const sorted = [...STAFF].sort((a,b) => {
+    const pa = pct(results[a.id]?.credit||0, a.plans.credit);
+    const pb = pct(results[b.id]?.credit||0, b.plans.credit);
+    return pb - pa;
+  });
+
+  let cards = '';
+  sorted.forEach((s, idx) => {
+    const r = results[s.id] || {credit:0,deposit:0};
+    const cp = pct(r.credit, s.plans.credit);
+    const dp = pct(r.deposit, s.plans.deposit);
+    const [rbg, rcl, rlbl] = rankLabel(cp);
+    const medals = ['🥇','🥈','🥉'];
+    cards += `
+    <div class="staff-card">
+      <div class="staff-header">
+        <div class="avatar" style="background:${s.bg};color:${s.color}">${s.initials}</div>
+        <div class="staff-info">
+          <h3>${medals[idx] || ''} ${s.name}</h3>
+          <p>${s.role}</p>
+        </div>
+        <span class="staff-rank" style="background:${rbg};color:${rcl}">${rlbl}</span>
+      </div>
+      <div class="plan-row">
+        <div class="plan-label">
+          <span class="plan-name">Кредит</span>
+          <span class="plan-nums" style="color:${barColor(cp)}">${fmt(r.credit)} / ${fmtPlan(s.plans.credit)} — ${cp}%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${cp}%;background:${barColor(cp)}"></div></div>
+      </div>
+      ${s.plans.deposit > 0 ? `
+      <div class="plan-row" style="margin-bottom:0">
+        <div class="plan-label">
+          <span class="plan-name">Депозит</span>
+          <span class="plan-nums" style="color:${barColor(dp)}">${fmt(r.deposit)} / ${fmtPlan(s.plans.deposit)} — ${dp}%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${dp}%;background:${barColor(dp)}"></div></div>
+      </div>` : ''}
+    </div>`;
+  });
+
+  return `
+  <div class="section-title">Дежурный на этой неделе</div>
+  <div class="duty-card">
+    <div class="duty-week">Неделя ${CURRENT_WEEK} · ${dutyEntry.dates}</div>
+    <div class="duty-person">
+      <div class="avatar" style="background:${dutyPerson.bg};color:${dutyPerson.color};width:50px;height:50px;font-size:17px">${dutyPerson.initials}</div>
+      <div class="duty-info">
+        <h3>${dutyPerson.name}</h3>
+        <p>${dutyPerson.role}</p>
+        <div class="duty-badge">● Дежурный сотрудник</div>
+      </div>
+    </div>
+  </div>
+  <div class="summary-grid">
+    <div class="sum-card">
+      <div class="sum-val" style="color:${barColor(totalPct)}">${totalPct}%</div>
+      <div class="sum-lab">Общий план кредит</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-val" style="color:#185FA5">${fmt(totalCredit)}</div>
+      <div class="sum-lab">Из ${fmtPlan(totalPlanCredit)}</div>
+    </div>
+  </div>
+  <div class="section-title">Рейтинг сотрудников</div>
+  ${cards}`;
+}
+
+function renderInput() {
+  let opts = STAFF.map(s => `<option value="${s.id}">${s.name} — ${s.role}</option>`).join('');
+  return `
+  <div class="input-card">
+    <h3>Внести результаты</h3>
+    <div class="field">
+      <label>Сотрудник</label>
+      <select id="sel-staff">${opts}</select>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Кредит выдан (млн)</label>
+        <input type="number" id="inp-credit" placeholder="0.0" step="0.1" min="0">
+      </div>
+      <div class="field">
+        <label>Депозит (млн)</label>
+        <input type="number" id="inp-deposit" placeholder="0.0" step="0.1" min="0">
+      </div>
+    </div>
+    <div class="field">
+      <div class="hint">Введите накопленные суммы за текущий месяц</div>
+    </div>
+    <button class="btn-submit" onclick="submitResult()">Сохранить результат</button>
+  </div>
+  <div class="input-card" style="margin-top:0">
+    <h3 style="font-size:13px;margin-bottom:10px">Текущие данные</h3>
+    ${STAFF.map(s => {
+      const r = results[s.id]||{credit:0,deposit:0};
+      const cp = pct(r.credit, s.plans.credit);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8">
+        <div class="avatar" style="background:${s.bg};color:${s.color};width:34px;height:34px;font-size:12px;border-radius:8px">${s.initials}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${s.name}</div>
+          <div style="font-size:11px;color:var(--muted)">Кредит: ${fmt(r.credit)} · Депозит: ${fmt(r.deposit)}</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:${barColor(cp)}">${cp}%</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderDuty() {
+  let rows = DUTY_SCHEDULE.map(d => {
+    const p = STAFF.find(s => s.id === d.person);
+    const isCurrent = d.week === CURRENT_WEEK;
+    return `<div class="week-row ${isCurrent ? 'current-week-row' : ''}">
+      <div class="week-num" style="${isCurrent?'color:#0F6E56;font-weight:700':''}">Нед. ${d.week}</div>
+      <div class="week-person">${isCurrent ? '● ' : ''}${p.name}</div>
+      <div class="week-dates">${d.dates}</div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="section-title">Текущий дежурный</div>
+  ${(() => {
+    const d = DUTY_SCHEDULE.find(x => x.week === CURRENT_WEEK);
+    const p = STAFF.find(s => s.id === d.person);
+    return `<div class="duty-card" style="margin-bottom:14px">
+      <div class="duty-week">Неделя ${d.week} · ${d.dates}</div>
+      <div class="duty-person">
+        <div class="avatar" style="background:${p.bg};color:${p.color};width:50px;height:50px;font-size:17px">${p.initials}</div>
+        <div class="duty-info">
+          <h3>${p.name}</h3>
+          <p>${p.role}</p>
+          <div class="duty-badge">● Дежурит сейчас</div>
+        </div>
+      </div>
+    </div>`;
+  })()}
+  <div class="section-title">График дежурств — Май 2025</div>
+  <div class="duty-sched">${rows}</div>
+  <div style="background:#E1F5EE;border-radius:12px;padding:12px;margin-top:2px">
+    <div style="font-size:12px;font-weight:600;color:#0F6E56;margin-bottom:4px">Как работает ротация</div>
+    <div style="font-size:12px;color:#085041;line-height:1.5">Дежурство меняется каждую неделю по кругу. Дежурный сотрудник несёт ответственность за открытие/закрытие отделения и решение оперативных вопросов.</div>
+  </div>`;
+}
+
+function submitResult() {
+  const staffId = parseInt(document.getElementById('sel-staff').value);
+  const credit = parseFloat(document.getElementById('inp-credit').value) || 0;
+  const deposit = parseFloat(document.getElementById('inp-deposit').value) || 0;
+  results[staffId] = { credit, deposit };
+  try { localStorage.setItem('hb_results', JSON.stringify(results)); } catch(e) {}
+  showToast('Данные сохранены!');
+  render();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+render();
+</script>
